@@ -42,9 +42,9 @@ for asd in range(len(data)):
     for x in range(1):
         er.append([0] * len(output_layer))  # dáváme desítky nul (jen jedna chic hic hichi)
         nextgenlabels = []
-        print(er, x)
+        
         for i in range(len(output_layer)):
-            if i == labels[0]:
+            if i == labels[asd]:
                 nextgenlabels.append(1)
             else:
                 nextgenlabels.append(0)
@@ -61,9 +61,7 @@ for asd in range(len(data)):
         np.zeros_like(w3)
     ]
     chneuronu = [hidden_layer1, hidden_layer2]
-        
-    print(w3)
-    print(len(w3), len(w3[x]))
+
     for x in range(len(w3)):
         for y in range(len(w3[x])):
             chclanku[2][x][y] = er[0][x] * (w3[x][y]/np.sum(w3[x]))
@@ -71,7 +69,7 @@ for asd in range(len(data)):
     for xxxx in range(len(w3)):
         chneuronu[1][xxxx] = np.sum(chclanku[2][xxxx])
 
-    print(chclanku)
+
     for x in range(len(w2)):
         for y in range(len(w2[x])):
             chclanku[1][x][y] = chneuronu[1][x] * (w2[x][y]/np.sum(w2[x]))
@@ -84,7 +82,6 @@ for asd in range(len(data)):
             chclanku[0][x][y] = chneuronu[0][x] * (w1[x][y]/np.sum(w1[x]))
 
 
-    print("chyby neuronu jedna a dva", chneuronu[0],"dva", chneuronu[1])
     alfa = 0.2
     for xxx, hodnota in enumerate(w3):
         for yyy, hodnotay in enumerate(hodnota):
@@ -98,5 +95,6 @@ for asd in range(len(data)):
         for yyy, hodnotay in enumerate(hodnota):
             w1[xxx][yyy] = w1[xxx][yyy] - alfa * (-chclanku[0][xxx][yyy]
                                                 *hidden_layer1[xxx] * (1 - hidden_layer1[xxx]) *data[0][xxx])
+    print(labels[asd], "->", output_layer)
 
             

@@ -51,6 +51,9 @@ for x in range(1):
 print(nextgenlabels)
 
 print("Error for first label:", er[0])
- 
+chybovost = w3
 print(w3)
-    
+for x in range(len(w3)):
+    for y in range(len(w3[x])):
+        chybov
+        w3[x][y] = w3[x][y] + er[0][x] * hidden_layer2[y]

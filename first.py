@@ -27,41 +27,76 @@ w1 = np.random.uniform(0, 0.05, (256, 784))  # 16 hidden neurons, 784 inputs
 w2 = np.random.uniform(0, 0.1, (16, 256)) 
 w3 = np.random.uniform(0, 0.5, (10, 16))    # 10 output neurons, 16 hidden neurons
 # Test input values
-
-# Forward propagation
-hidden_layer1 = sigmoid(np.dot(w1, data[0]))  # Using the first label as input
-hidden_layer2 = sigmoid(np.dot(w2, hidden_layer1))
-output_layer = sigmoid(np.dot(w3, hidden_layer2))
-
-
-#w3[0][0] = labels[0] -
-print("Output layer (after w3):", output_layer)
-er = []
-nextgenlabels = []
-for x in range(1):
-    er.append([0] * len(output_layer))  # Initialize error list for each label
-    for i in range(len(output_layer)):
-        if i == labels[0]:
-            nextgenlabels.append(1)
-        else:
-            nextgenlabels.append(0)
+for asd in range(len(data)):
         
-        if x == 0:
-            er[x][i] = (nextgenlabels[i] - output_layer[i])**2
-print(nextgenlabels)
-
-print("Error for first label:", er[0])
-
-chclanku = [hidden_layer1, hidden_layer2]
-    
-print(w3)
-for x in range(len(w3)):
-    for y in range(len(w3[x])):
-        chclanku[x][y] = er[y]* (w3[x][y]/np.sum(w3[x]))
-
-for xxxx in range(len(w3)):
-    
-    chclanku[xxxx] = np.sum(chclanku[xxxx])
+    # Forward propagation
+    hidden_layer1 = sigmoid(np.dot(w1, data[asd]))  # Using the first label as input
+    hidden_layer2 = sigmoid(np.dot(w2, hidden_layer1))
+    output_layer = sigmoid(np.dot(w3, hidden_layer2))
 
 
+    #w3[0][0] = labels[0] -
+    print("Output layer (after w3):", output_layer)
+    er = []
+    nextgenlabels = []
+    for x in range(1):
+        er.append([0] * len(output_layer))  # dáváme desítky nul (jen jedna chic hic hichi)
+        nextgenlabels = []
+        print(er, x)
+        for i in range(len(output_layer)):
+            if i == labels[0]:
+                nextgenlabels.append(1)
+            else:
+                nextgenlabels.append(0)
+            
+            if x == 0:
+                er[x][i] = (nextgenlabels[i] - output_layer[i])**2
+    print(nextgenlabels)
+
+    print("Error for first label:", er[0])
+
+    chclanku = [
+        np.zeros_like(w1),
+        np.zeros_like(w2),
+        np.zeros_like(w3)
+    ]
+    chneuronu = [hidden_layer1, hidden_layer2]
         
+    print(w3)
+    print(len(w3), len(w3[x]))
+    for x in range(len(w3)):
+        for y in range(len(w3[x])):
+            chclanku[2][x][y] = er[0][x] * (w3[x][y]/np.sum(w3[x]))
+
+    for xxxx in range(len(w3)):
+        chneuronu[1][xxxx] = np.sum(chclanku[2][xxxx])
+
+    print(chclanku)
+    for x in range(len(w2)):
+        for y in range(len(w2[x])):
+            chclanku[1][x][y] = chneuronu[1][x] * (w2[x][y]/np.sum(w2[x]))
+
+    for xxxx in range(len(w2)):
+        chneuronu[0][xxxx] = np.sum(chclanku[1][xxxx])
+        
+    for x in range(len(w1)):
+        for y in range(len(w1[x])):
+            chclanku[0][x][y] = chneuronu[0][x] * (w1[x][y]/np.sum(w1[x]))
+
+
+    print("chyby neuronu jedna a dva", chneuronu[0],"dva", chneuronu[1])
+    alfa = 0.2
+    for xxx, hodnota in enumerate(w3):
+        for yyy, hodnotay in enumerate(hodnota):
+            w3[xxx][yyy] = w3[xxx][yyy] - alfa * (-chclanku[2][xxx][yyy]
+                                                *output_layer[xxx] * (1 - output_layer[xxx]) *hidden_layer2[xxx])
+    for xxx, hodnota in enumerate(w2):
+        for yyy, hodnotay in enumerate(hodnota):
+            w2[xxx][yyy] = w2[xxx][yyy] - alfa * (-chclanku[1][xxx][yyy]
+                                                *hidden_layer2[xxx] * (1 - hidden_layer2[xxx]) *hidden_layer1[xxx])
+    for xxx, hodnota in enumerate(w1):
+        for yyy, hodnotay in enumerate(hodnota):
+            w1[xxx][yyy] = w1[xxx][yyy] - alfa * (-chclanku[0][xxx][yyy]
+                                                *hidden_layer1[xxx] * (1 - hidden_layer1[xxx]) *data[0][xxx])
+
+            

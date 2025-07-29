@@ -82,19 +82,17 @@ for asd in range(len(data)):
             chclanku[0][x][y] = chneuronu[0][x] * (w1[x][y]/np.sum(w1[x]))
 
 
-    alfa = 0.2
+    alfa = 0.5
     for xxx, hodnota in enumerate(w3):
         for yyy, hodnotay in enumerate(hodnota):
             w3[xxx][yyy] = w3[xxx][yyy] - alfa * (-chclanku[2][xxx][yyy]
-                                                *output_layer[xxx] * (1 - output_layer[xxx]) *hidden_layer2[xxx])
+                                                *output_layer[xxx] * (1 - output_layer[xxx]) *hidden_layer2[yyy])
     for xxx, hodnota in enumerate(w2):
         for yyy, hodnotay in enumerate(hodnota):
             w2[xxx][yyy] = w2[xxx][yyy] - alfa * (-chclanku[1][xxx][yyy]
-                                                *hidden_layer2[xxx] * (1 - hidden_layer2[xxx]) *hidden_layer1[xxx])
+                                                *hidden_layer2[xxx] * (1 - hidden_layer2[xxx]) *hidden_layer1[yyy])
     for xxx, hodnota in enumerate(w1):
         for yyy, hodnotay in enumerate(hodnota):
             w1[xxx][yyy] = w1[xxx][yyy] - alfa * (-chclanku[0][xxx][yyy]
-                                                *hidden_layer1[xxx] * (1 - hidden_layer1[xxx]) *data[0][xxx])
+                                                *hidden_layer1[xxx] * (1 - hidden_layer1[xxx]) *data[asd][yyy])
     print(labels[asd], "->", output_layer)
-
-            

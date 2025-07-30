@@ -23,9 +23,9 @@ def sigmoid(x):
 
 
 # Neural network weights
-w1 = np.random.uniform(0, 0.05, (256, 784))  # 16 hidden neurons, 784 inputs
-w2 = np.random.uniform(0, 0.1, (16, 256)) 
-w3 = np.random.uniform(0, 0.5, (10, 16))    # 10 output neurons, 16 hidden neurons
+w1 = np.random.uniform(0, 1/((28*28)**0.5), (256, 784))  # 16 hidden neurons, 784 inputs
+w2 = np.random.uniform(0, 1/((256)**0.5), (16, 256)) 
+w3 = np.random.uniform(0, 1/((32)**0.5), (10, 32))    # 10 output neurons, 16 hidden neurons
 # Test input values
 for asd in range(len(data)):
         

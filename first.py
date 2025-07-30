@@ -16,17 +16,25 @@ with open("Neuronka\mnist_train_100.csv", "r") as f:
 
         labels.append(label)
         data.append(pixels)
-
-
-def sigmoid(x):
-    return 1 / (1 + np.exp(-x)) 
-
-
-# Neural net    work weights
+learningrate = 1/3
 w1 = np.random.uniform(0, 1/((28*28)**0.5), (256, 784))  # 16 hidden neurons, 784 inputs
 print(w1)
 w2 = np.random.uniform(0, 1/((256)**0.5), (32, 256)) 
-w3 = np.random.uniform(0, 1/((32)**0.5), (10, 32))    # 10 output neurons, 16 hidden neurons
+w3 = np.random.uniform(0, 1/((32)**0.5), (10, 32)) 
+def sigmoid(x):
+    return 1 / (1 + np.exp(-x)) 
+def vyslednakalkulace(v1,v2,v3, l1,l2,l3,l4,e2,e3,e4,lr):
+    e = [e2, e3, e4]
+    v = [v1, v2, v3]
+    l = [l1, l2, l3, l4]
+    zmena = [np.zeros_like(v1),
+        np.zeros_like(v2),
+        np.zeros_like(v3)]
+    for x in range(len(zmena)):
+        zmena[x] = np.dot(lr*e[x]*l[x]*(1-l[x]),l[x-1].T)
+
+# Neural net    work weights
+   # 10 output neurons, 16 hidden neurons
 # Test input values
 for asd in range(len(data)):
         
@@ -60,6 +68,12 @@ for asd in range(len(data)):
         np.zeros_like(w3)
     ]
     chneuronu = [hidden_layer1, hidden_layer2]
-    chclanku = np.dot(w3[:,0], er[0])
+    for x in range(len(chclanku)):
+        if x==0:
+            chclanku[x] = np.dot(w3.T, er[0])
+        else:
+            chclanku[x] = np.dot(w3.T, chclanku[x-1])
 
-print("printuju", chclanku)
+
+    vyslednakalkulace(w1,w2,w3,data[asd], hidden_layer1, hidden_layer2, output_layer, chclanku[0], chclanku[1], er[0],learningrate)
+

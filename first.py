@@ -63,8 +63,9 @@ for asd in range(len(data)):
     chneuronu = [hidden_layer1, hidden_layer2]
 
     for x in range(len(w3)):
+        sumaw3x=np.sum(w3[x])
         for y in range(len(w3[x])):
-            chclanku[2][x][y] = er[0][x] * (w3[x][y]/np.sum(w3[x]))
+            chclanku[2][x][y] = (er[0][x]*w3[x][y])/sumaw3x #x u chclanku je jako x u w3 tedy pro kazdej neuron
 
     for xxxx in range(len(w3)):
         chneuronu[1][xxxx] = np.sum(chclanku[2][xxxx])

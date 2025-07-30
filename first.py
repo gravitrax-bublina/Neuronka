@@ -1,79 +1,156 @@
 import numpy as np 
 import csv
+import json
 
 # Load MNIST data from CSV file
 # Assuming the CSV file is formatted with each row as an image and the first column as the label
-# For example, the first row might look like: [label, pixel1, pixel2    , ..., pixel784]                
-with open("Neuronka\mnist_train_100.csv", "r") as f:
-    data = []
-    labels = []
-    # Read the CSV file
+# For example, the first row might look like: [label, pixel1, pixel2    , ..., pixel784]   
+def uloz(w):
+    np.savez("OBROVSKA_NEURONOVA_SIT.npz", *w)
+def load():
+    data = np.load("OBROVSKA_NEURONOVA_SIT.npz")
+    w = [data[key] for key in data.files]
+    return w
+def berdata(umisteni):
+    with open(umisteni, "r") as f:
+        dataa = []
+        labels = []
+        # Read the CSV file
 
-    for line in f:
-        values = line.split(",")
-        label = int(values[0])               # first value is label
-        pixels = [int(v) for v in values[1:]]  # rest is pixel data
+        for line in f:
+            values = line.split(",")
+            label = int(values[0])               # first value is label
+            pixels = [int(v) for v in values[1:]]  # rest is pixel data
 
-        labels.append(label)
-        data.append(pixels)
+            labels.append(label)
+            dataa.append(pixels)
+        dataa = np.array(dataa)
+        dataa = dataa /265
+        return([labels, dataa])
 learningrate = 1/3
-w1 = np.random.uniform(0, 1/((28*28)**0.5), (256, 784))  # 16 hidden neurons, 784 inputs
-print(w1)
-w2 = np.random.uniform(0, 1/((256)**0.5), (32, 256)) 
-w3 = np.random.uniform(0, 1/((32)**0.5), (10, 32)) 
+#data = [data[0]]
+w1 = np.random.normal(0, 1/((28*28)**0.5), (256, 784))  # 16 hidden neurons, 784 inputs
+w2 = np.random.normal(0, 1/((256)**0.5), (32, 256)) 
+w3 = np.random.normal(0, 1/((32)**0.5), (10, 32)) 
+w = [w1, w2, w3]
+
+
+
 def sigmoid(x):
     return 1 / (1 + np.exp(-x)) 
-def vyslednakalkulace(v1,v2,v3, l1,l2,l3,l4,e2,e3,e4,lr):
-    e = [e2, e3, e4]
-    v = [v1, v2, v3]
-    l = [l1, l2, l3, l4]
+def vyslednakalkulace(v1,v2,v3,l1,l2,l3,l4,e2,e3,e4,lr):
+    e = [np.array(x, ndmin=2) for x in [e2, e3, e4]]
+    v = [np.array(x, ndmin=2) for x in [v1, v2, v3]]
+    l = [np.array(x, ndmin=2) for x in [l1, l2, l3, l4]]
+    
     zmena = [np.zeros_like(v1),
         np.zeros_like(v2),
         np.zeros_like(v3)]
     for x in range(len(zmena)):
-        zmena[x] = np.dot(lr*e[x]*l[x]*(1-l[x]),l[x-1].T)
+        #print(x, len(e[x]),len(l[x+1]))
+        #print(e[x]*l[x+1]*(1-l[x+1]))
+        #print(l[x].T)
+        zmena[x] = lr*np.dot((e[x]*l[x+1]*(1-l[x+1])).T, l[x])
+        #print("zmena: ")
+        #print(len(zmena[x]), len(zmena[x][0]))
+    return zmena
+def jakecislo(label,ol,asd,n):
+    nejvyssi = 0
+    for x in ol:
+        if x > nejvyssi:
+            nejvyssi = x
+    if nejvyssi == ol[label]:
+        return(True, nejvyssi)
+    else:
+        
+        if(asd%n ==0): 
+            print(nejvyssi, ol[label])
+        return(False, nejvyssi)
+        
+    
 
 # Neural net    work weights
    # 10 output neurons, 16 hidden neurons
 # Test input values
-for asd in range(len(data)):
-        
-    # Forward propagation
-    hidden_layer1 = sigmoid(np.dot(w1, data[asd]))  # Using the first label as input
-    hidden_layer2 = sigmoid(np.dot(w2, hidden_layer1))
-    output_layer = sigmoid(np.dot(w3, hidden_layer2))
-
-    print("Output layer (after w3):", output_layer)
-    er = []
-    nextgenlabels = []
-    for x in range(1):
-        er.append([0] * len(output_layer))  # dáváme desítky nul (jen jedna chic hic hichi)
-        nextgenlabels = []
-        
-        for i in range(len(output_layer)):
-            if i == labels[asd]:
-                nextgenlabels.append(1)
-            else:
-                nextgenlabels.append(0)
+uspesnosti = []
+def rantimee(analyse, umisteni):
+    liist=berdata(umisteni)
+    labels = liist[0]
+    
+    data = liist[1]
+    for asd in range(len(data)):
             
-            if x == 0:
-                er[x][i] = (nextgenlabels[i] - output_layer[i])**2
-    print(nextgenlabels)
+        # Forward propagation
+        hidden_layer1 = sigmoid(np.dot(w[0], data[asd]))  # Using the first label as input
+        hidden_layer2 = sigmoid(np.dot(w[1], hidden_layer1))
+        output_layer = sigmoid(np.dot(w[2], hidden_layer2))
 
-    print("Error for first label:", er[0])
+        #print("Output layer (after w3):", output_layer)
+        er = []
+        nextgenlabels = []
+        for x in range(1):
+            er.append(np.zeros(len(output_layer)))  # dáváme desítky nul (jen jedna chic hic hichi)
+            nextgenlabels = []
+            
+            for i in range(len(output_layer)):
+                if i == labels[asd]:
+                    nextgenlabels.append(1)
+                else:
+                    nextgenlabels.append(0)
+                
+                if x == 0:
+                    er[x][i] = (nextgenlabels[i] - output_layer[i])
+        #print(nextgenlabels)
 
-    chclanku = [
-        np.zeros_like(w1),
-        np.zeros_like(w2),
-        np.zeros_like(w3)
-    ]
-    chneuronu = [hidden_layer1, hidden_layer2]
-    for x in range(len(chclanku)):
-        if x==0:
-            chclanku[x] = np.dot(w3.T, er[0])
-        else:
-            chclanku[x] = np.dot(w3.T, chclanku[x-1])
 
 
-    vyslednakalkulace(w1,w2,w3,data[asd], hidden_layer1, hidden_layer2, output_layer, chclanku[0], chclanku[1], er[0],learningrate)
+        chclanku = [
+            np.zeros_like(w[0]),
+            np.zeros_like(w[1]),
+            np.zeros_like(w[2])
+        ]
+        chneuronu = [hidden_layer1, hidden_layer2]
+        for x in range(len(chclanku)):
+            if x==0:
+                chclanku[x] = np.dot(w[2].T, er[0])
+            else:
+                chclanku[x] = np.dot(w[2-x].T, chclanku[x-1])
+
+        vysledky = [np.zeros_like(w[0]),
+            np.zeros_like(w[1]),
+            np.zeros_like(w[2])]
+        deltas = vyslednakalkulace(
+            w[0],w[1],w[2],data[asd], 
+            hidden_layer1, hidden_layer2, output_layer,
+            chclanku[1], chclanku[0], er[0], learningrate)
+        for x in range(len(w)):
+            w[x] += deltas[x]
+        n=1000
+        uspesnosti.append([jakecislo(labels[asd], output_layer,asd, n)])
+        
+        if(asd%n == 0):
+            
+            print("output",output_layer, labels[asd], uspesnosti[asd], n)
+    return(uspesnosti)
+        
+for x in range(2):
+
+    if x==0:
+        dd = rantimee(True, "Neuronka\mnist_train.csv")
+    else:
+        print("test")
+        vysledkyy = rantimee(True, "Neuronka\mnist_test.csv")
+        uspesnost = 0
+        probabilitaus = 0
+        for x in range(len(vysledkyy)):
+            if vysledkyy[x][0][0] == True:
+                uspesnost = uspesnost + 1
+            
+            probabilitaus = probabilitaus + vysledkyy[x][0][1] 
+            
+        probabilitaus = probabilitaus / len(vysledkyy)
+        uspesnost = uspesnost / len(vysledkyy)
+        print ("certainty: ", probabilitaus, "uspesnost: ", uspesnost)
+        uloz(w)
+
 

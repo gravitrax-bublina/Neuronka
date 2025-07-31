@@ -27,7 +27,7 @@ def berdata(umisteni):
         dataa = np.array(dataa)
         dataa = dataa /265
         return([labels, dataa])
-learningrate = 1/3
+learningrate = 1/12
 #data = [data[0]]
 w1 = np.random.normal(0, 1/((28*28)**0.5), (256, 784))  # 16 hidden neurons, 784 inputs
 w2 = np.random.normal(0, 1/((256)**0.5), (32, 256)) 
@@ -56,12 +56,15 @@ def vyslednakalkulace(v1,v2,v3,l1,l2,l3,l4,e2,e3,e4,lr):
     return zmena
 def jakecislo(label,ol,asd,n):
     nejvyssi = 0
+    print(ol)
     for x in ol:
         if x > nejvyssi:
             nejvyssi = x
+    print(nejvyssi)
+    
     if nejvyssi > ol[label]:
-        if(asd%n ==0): 
-            print(nejvyssi, ol[label], "fc")
+        #if(asd%n == 0): 
+        print(nejvyssi, ol[label], label, "fc")
         return(False, nejvyssi)
     else:
         return(True, nejvyssi)

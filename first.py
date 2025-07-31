@@ -36,13 +36,11 @@ def sigmoid(x):
     return 1 / (1 + np.exp(-x)) 
 
 ## Network parameters
-node_sizes = [784, 100, 10]
-learningrate = 0.15
-w = [
-    #np.random.normal(0, 1/((28*28)**0.5), (256, 784)),  # 16 hidden neurons, 784 inputs
-    np.random.normal(0, 1/((28*28)**0.5), (100, 784)), 
-    np.random.normal(0, 1/((100)**0.5), (10, 100))
-    ]
+node_sizes = [784, 512, 256, 128, 10]
+learningrate = 0.01
+w = []
+for i in range(len(node_sizes) - 1):
+    w.append(np.random.normal(0, 1/((node_sizes[i])**0.5), (node_sizes[i+1], node_sizes[i])))   
 
 def vyslednakalkulace(layers, errors, lr):
     e = [np.array(x, ndmin=2) for x in errors]
@@ -80,7 +78,7 @@ def train(umisteni):
         hidden_layers = [sigmoid(np.dot(w[0], data[asd]))]  # Using the first label as input
         for w_i in range(1, len(w)-1):
             hidden_layers.append(sigmoid(np.dot(w[w_i], hidden_layers[-1])))
-        output_layer = sigmoid(np.dot(w[1], hidden_layers[-1]))
+        output_layer = sigmoid(np.dot(w[-1], hidden_layers[-1]))
 
         # Backward propagation
         er = np.zeros(len(output_layer))
@@ -100,6 +98,7 @@ def train(umisteni):
                 chclanku[x] = np.dot(w[-1].T, er)
             else:
                 chclanku[x] = np.dot(w[-1-x].T, chclanku[x-1])
+        chclanku.reverse()
 
         deltas = vyslednakalkulace(
             [data[asd]] + hidden_layers + [output_layer],  

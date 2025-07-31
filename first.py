@@ -59,13 +59,12 @@ def jakecislo(label,ol,asd,n):
     for x in ol:
         if x > nejvyssi:
             nejvyssi = x
-    if nejvyssi == ol[label]:
-        return(True, nejvyssi)
-    else:
-        
+    if nejvyssi > ol[label]:
         if(asd%n ==0): 
-            print(nejvyssi, ol[label])
+            print(nejvyssi, ol[label], "fc")
         return(False, nejvyssi)
+    else:
+        return(True, nejvyssi)
         
     
 
@@ -136,10 +135,21 @@ def rantimee(analyse, umisteni):
 for x in range(2):
 
     if x==0:
-        dd = rantimee(True, "Neuronka\mnist_train.csv")
+        dd = rantimee(True, "mnist_train.csv")
+        uspesnost = 0
+        probabilitaus = 0
+        for x in range(len(dd)):
+            if dd[x][0][0] == True:
+                uspesnost = uspesnost + 1
+            
+            probabilitaus = probabilitaus + dd[x][0][1] 
+            
+        probabilitaus = probabilitaus / len(dd)
+        uspesnost = uspesnost / len(dd)
+        print ("certainty: ", probabilitaus, "uspesnost: ", uspesnost)
     else:
         print("test")
-        vysledkyy = rantimee(True, "Neuronka\mnist_test.csv")
+        vysledkyy = rantimee(True, "mnist_test.csv")
         uspesnost = 0
         probabilitaus = 0
         for x in range(len(vysledkyy)):
